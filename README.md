@@ -1,6 +1,17 @@
-# 🎯 Media Analyst Agent
+# Media Analyst Agent
 
 > An autonomous AI agent that acts as a Junior Media Analyst for e-commerce teams — understanding natural language questions, querying BigQuery in real time, and delivering actionable insights.
+
+---
+
+## Quick Example
+
+**Question:**
+"Which channel has the best performance?"
+
+**Answer:**
+"Search leads in revenue with $142k and a 4.2% conversion rate. 
+Recommendation: increase budget allocation before peak season."
 
 ---
 
@@ -15,7 +26,9 @@ Media and growth teams spend too much time manually crossing traffic data with s
 
 ---
 
-## 🏗️ Architecture
+## Architecture
+
+The agent is built on a **ReAct (Reasoning + Acting)** loop using LangGraph. Instead of a single giant prompt, the LLM autonomously decides which tool to call based on the user's question.
 
 ```
 User Message (HTTP POST /api/v1/chat)
@@ -36,15 +49,16 @@ User Message (HTTP POST /api/v1/chat)
   │  5. Returns a natural response  │
   └──────────────┬──────────────────┘
                  │
-        ┌────────┴────────┐
-        ▼                 ▼                  ▼
- get_traffic_volume  get_revenue_by_channel  get_channel_comparison
-        │                 │                  │
-        └────────┬─────────────────────────-─┘
+        ┌────────┼────────┐
+        ▼        ▼        ▼
+get_traffic  get_revenue  get_channel
+  _volume    _by_channel  _comparison
+        │        │        │
+        └────────┼────────┘
                  │
                  ▼
         ┌─────────────────┐
-        │  BigQueryService │  ← bigquery_service.py: executes parameterized SQL
+        │ BigQueryService │  ← bigquery_service.py: executes parameterized SQL
         └─────────┬───────┘
                   │
                   ▼
@@ -63,7 +77,7 @@ User Message (HTTP POST /api/v1/chat)
 
 ---
 
-## 🛠️ Tools
+## Tools
 
 The agent has access to three tools. It picks the right one based on the user's intent:
 
@@ -94,15 +108,47 @@ The agent has access to three tools. It picks the right one based on the user's 
 
 ---
 
-## 🚀 Setup
+### Out-of-scope guardrail
+
+If the user asks something outside the media/revenue domain (e.g. *"What's the weather?"*), the agent politely declines without calling any tool.
+
+---
+
+## 🗂️ Project Structure
+
+```
+media-analyst-agent/
+├── app/
+│   ├── agent/
+│   │   ├── agent.py             # LangGraph ReAct agent orchestration
+│   │   └── tools.py             # 3 BigQuery tools with @tool decorator
+│   ├── api/
+│   │   └── routes.py            # FastAPI POST /api/v1/chat endpoint
+│   ├── core/
+│   │   └── config.py            # Pydantic settings (reads from .env)
+│   ├── prompts/
+│   │   └── system_prompt.py     # System prompt (separated from logic)
+│   ├── schemas/
+│   │   ├── chat.py              # ChatRequest, ChatResponse
+│   │   └── query.py             # Tool input params (Pydantic)
+│   └── services/
+│       └── bigquery_service.py  # BigQuery client with parameterized queries
+├── main.py                      # FastAPI entrypoint
+├── pyproject.toml
+├── requirements.txt
+└── .env.example
+```
+
+---
+
+## Setup
 
 ### Prerequisites
 
 - Python 3.10+
-- A Google Cloud account (free tier works) with access to BigQuery
-- An Anthropic API key ([get one here](https://console.anthropic.com/))
-
----
+- A [Google Cloud](https://console.cloud.google.com) account with BigQuery API enabled
+- A GCP Service Account with `BigQuery Data Viewer` and `BigQuery Job User` roles
+- An [Anthropic API key](https://console.anthropic.com)
 
 ### 1. Clone the repository
 
@@ -115,7 +161,12 @@ cd media-analyst-agent
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Windows
+.venv\Scripts\Activate.ps1
+
+# macOS/Linux
+source .venv/bin/activate
 ```
 
 ### 3. Install dependencies
@@ -133,116 +184,121 @@ This project queries `bigquery-public-data.thelook_ecommerce`, which is publicly
 2. Create a new project (or use an existing one)
 3. Enable the **BigQuery API**
 4. Go to **IAM & Admin → Service Accounts**
-5. Create a service account with the role `BigQuery Job User`
+5. Create a service account with the roles `BigQuery Data Viewer` and `BigQuery Job User`
 6. Download the JSON key file
-7. Save it somewhere safe (e.g., `credentials/gcp_key.json`)
+7. Place it at `app/keys/service_account.json`
 
 ### 5. Configure environment variables
 
-Create a `.env` file at the root of the project:
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in your credentials:
 
 ```env
-ANTHROPIC_API_KEY=sk-ant-...
-BQ_PROJECT_ID=your-gcp-project-id
-BQ_CREDENTIALS_PATH=credentials/gcp_key.json
+ANTHROPIC_API_KEY=your_anthropic_api_key
+BQ_PROJECT_ID=your_gcp_project_id
+BQ_CREDENTIALS_PATH=app/keys/service_account.json
 ```
 
 | Variable | Description |
 |---|---|
 | `ANTHROPIC_API_KEY` | Your Anthropic API key |
-| `BQ_PROJECT_ID` | The GCP project ID that will **run** the BigQuery jobs (billing target) |
+| `BQ_PROJECT_ID` | The GCP project ID that will run the BigQuery jobs (billing target) |
 | `BQ_CREDENTIALS_PATH` | Path to the service account JSON key file |
 
-> ⚠️ The `BQ_PROJECT_ID` is the project that **executes** the queries, not the dataset's project (`bigquery-public-data`). Querying public datasets is free within the free tier quota.
+> ⚠️ `BQ_PROJECT_ID` is the project that **executes** the queries, not the dataset's project (`bigquery-public-data`). Querying public datasets is free within the free tier quota.
+
+> ⚠️ Never commit `.env` or `*.json` files. They are already listed in `.gitignore`.
 
 ### 6. Run the server
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`.
-
-Interactive docs: `http://localhost:8000/docs`
+The API will be available at `http://127.0.0.1:8000`.
+Interactive docs: `http://127.0.0.1:8000/docs`
 
 ---
 
-## 📡 API Usage
+## Usage
 
-### `POST /api/v1/chat`
+### Example requests
 
-**Request:**
+**Traffic volume by channel:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "How was the volume of users from Search in the last month?"}'
+```
+
+**Best performing channel:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Which channel has the best performance and why?"}'
+```
+
+**Revenue by channel:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What was the revenue per channel in the last 30 days?"}'
+```
+
+### Example response
+
 ```json
 {
-  "message": "Which channel had the highest revenue last month?"
+  "response": "Based on the last 30 days, Search led all channels with $142,300 in revenue across 1,820 orders (avg $78.18/order). It also has the highest conversion rate at 4.2%, meaning 1 in 24 visitors makes a purchase. Email had the highest average order value at $91.40, suggesting a higher-intent audience. Recommendation: increase budget allocation toward Search while testing higher-value offers through Email.",
+  "tool_used": "get_channel_comparison"
 }
 ```
 
-**Response:**
-```json
-{
-  "response": "Based on the last 30 days, **Search** led all channels with $142,300 in revenue across 1,820 orders (avg $78.18/order). Email had the highest average order value at $91.40, suggesting a higher-intent audience. I'd recommend increasing budget allocation toward Search while testing higher-value offers through Email.",
-  "tool_used": "get_revenue_by_channel"
-}
-```
+---
 
-### `GET /health`
+## Health check
 
-```json
-{ "status": "ok" }
+```bash
+curl http://127.0.0.1:8000/health
+# {"status": "ok"}
 ```
 
 ---
 
-## 📁 Project Structure
+## Dataset
 
-```
-.
-├── app/
-│   ├── main.py                  # FastAPI app entry point
-│   ├── api/
-│   │   └── routes.py            # HTTP route definitions
-│   ├── agent/
-│   │   ├── agent.py             # LangGraph ReAct agent setup
-│   │   └── tools.py             # Tool definitions (LangChain @tool)
-│   ├── services/
-│   │   └── bigquery_service.py  # BigQuery client and SQL queries
-│   ├── schemas/
-│   │   ├── chat.py              # ChatRequest / ChatResponse models
-│   │   └── query.py             # Tool parameter models
-│   ├── prompts/
-│   │   └── system_prompt.py     # Agent system prompt
-│   └── core/
-│       └── config.py            # Settings via pydantic-settings
-├── credentials/                 # ← put your GCP key here (gitignored)
-├── .env                         # ← environment variables (gitignored)
-├── requirements.txt
-└── README.md
-```
+This project uses the public BigQuery dataset [`bigquery-public-data.thelook_ecommerce`](https://console.cloud.google.com/marketplace/product/bigquery-public-data/thelook-ecommerce), which simulates a clothing e-commerce store.
 
----
-
-## 📦 Dependencies
-
-Key packages used:
-
-| Package | Purpose |
+| Table | Key columns used |
 |---|---|
-| `fastapi` | Web framework |
-| `uvicorn` | ASGI server |
-| `langchain-anthropic` | Anthropic LLM integration for LangChain |
-| `langgraph` | ReAct agent orchestration |
-| `langchain-core` | Tool decorators and base abstractions |
-| `google-cloud-bigquery` | Official BigQuery Python client |
-| `pydantic` / `pydantic-settings` | Data validation and config management |
+| `users` | `id`, `traffic_source`, `created_at` |
+| `orders` | `order_id`, `user_id`, `status`, `created_at` |
+| `order_items` | `order_id`, `sale_price` |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| Web framework | FastAPI |
+| AI orchestration | LangGraph (ReAct agent) |
+| LLM | Claude (Anthropic) via `langchain-anthropic` |
+| Data warehouse | Google BigQuery |
+| Data validation | Pydantic v2 |
+| Configuration | pydantic-settings |
 
 ---
 
 ## 🔒 Security Notes
 
 - All SQL queries use **parameterized inputs** (`ScalarQueryParameter`) — no raw string interpolation.
-- The `.env` file and `credentials/` directory should be added to `.gitignore` and never committed.
-- The service account only needs `BigQuery Job User` — no write permissions required.
+- The `.env` file and service account JSON are listed in `.gitignore` and should never be committed.
+- The service account only needs `BigQuery Job User` and `BigQuery Data Viewer` — no write permissions required.
 
 ---
 
@@ -259,11 +315,17 @@ The MVP keeps things simple with a synchronous response. Streaming can be added 
 
 ---
 
-## 🗺️ Possible Next Steps
+## Possible Next Steps
 
 - [ ] Add conversation memory (multi-turn support)
 - [ ] Streaming responses via Server-Sent Events
-- [ ] Date range parameters exposed to the user naturally ("last week", "Q1", etc.)
+- [ ] Natural date range parsing ("last week", "Q1", etc.)
 - [ ] Add a `get_top_products_by_channel` tool for deeper SKU-level insights
 - [ ] Dockerize for easy deployment
 - [ ] Add evaluation tests with LangSmith
+
+---
+
+## 👩‍💻 Author
+
+Ana Caroline Demier
