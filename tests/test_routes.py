@@ -19,7 +19,11 @@ def mock_run_agent():
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {
+        "status": "ok",
+        "service": "media-analyst-agent",
+        "version": "0.1.0",
+    }
 
 
 def test_chat_returns_200(mock_run_agent):
