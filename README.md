@@ -10,7 +10,7 @@
 "Which channel has the best performance?"
 
 **Answer:**
-"Search leads in revenue with $142k and a 4.2% conversion rate. 
+"Search leads in revenue with $142k and a 4.2% conversion rate.
 Recommendation: increase budget allocation before peak season."
 
 ---
@@ -23,6 +23,7 @@ Media and growth teams spend too much time manually crossing traffic data with s
 The agent supports multilingual queries and responds in the same language as the user, enabling seamless interaction in both English and Portuguese.
 
 **Example interactions:**
+
 - *"How did the Search channel perform last month?"*
 - *"Which channel has the best conversion rate and why?"*
 - *"Show me revenue by channel for the last 7 days."*
@@ -85,6 +86,7 @@ get_traffic  get_revenue  get_channel
 The agent has access to three tools. It picks the right one based on the user's intent:
 
 ### `get_traffic_volume`
+
 **When:** User asks about visits, user volume, or a specific channel (Search, Organic, Facebook, etc.)
 
 **Query:** Aggregates `COUNT(*)` from the `users` table grouped by `traffic_source`, filtered by a date window.
@@ -94,6 +96,7 @@ The agent has access to three tools. It picks the right one based on the user's 
 ---
 
 ### `get_revenue_by_channel`
+
 **When:** User asks about revenue, sales, orders, or financial performance.
 
 **Query:** JOINs `users → orders → order_items`, excludes cancelled/returned orders, and returns `total_revenue`, `total_orders`, and `avg_order_value` per channel.
@@ -103,6 +106,7 @@ The agent has access to three tools. It picks the right one based on the user's 
 ---
 
 ### `get_channel_comparison`
+
 **When:** User wants a full ranking, wants to know which channel performs best, or asks for an overall analysis.
 
 **Query:** A single LEFT JOIN across all three tables that returns `total_users`, `total_orders`, `total_revenue`, `conversion_rate_pct`, and `revenue_per_user` per channel — all in one shot.
@@ -158,7 +162,7 @@ media-analyst-agent/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/media-analyst-agent.git
+git clone https://github.com/anaeggerdemier/media-analyst-agent.git
 cd media-analyst-agent
 ```
 
@@ -185,6 +189,7 @@ pip install -r requirements.txt
 This project queries `bigquery-public-data.thelook_ecommerce`, which is publicly available. You only need a GCP service account with BigQuery read permissions.
 
 **Steps:**
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project (or use an existing one)
 3. Enable the **BigQuery API**
@@ -233,6 +238,7 @@ Interactive docs: `http://127.0.0.1:8000/docs`
 ### Example requests
 
 **Traffic volume by channel:**
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/chat \
   -H "Content-Type: application/json" \
@@ -240,6 +246,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/chat \
 ```
 
 **Best performing channel:**
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/chat \
   -H "Content-Type: application/json" \
@@ -247,6 +254,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/chat \
 ```
 
 **Revenue by channel:**
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/chat \
   -H "Content-Type: application/json" \
@@ -276,6 +284,7 @@ curl http://127.0.0.1:8000/health
 ## Tests
 
 All tests use mocks — no real BigQuery or Anthropic API calls are made.
+
 ```bash
 pytest tests/ -v
 ```
@@ -289,7 +298,6 @@ pytest tests/ -v
 | `test_routes.py` | API endpoints: happy path, validation (422), and error handling (500) |
 
 ---
-
 
 ## Dataset
 
