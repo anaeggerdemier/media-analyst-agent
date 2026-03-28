@@ -19,6 +19,9 @@ Recommendation: increase budget allocation before peak season."
 
 Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real performance of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
 
+**Language support:**
+The agent supports multilingual queries and responds in the same language as the user, enabling seamless interaction in both English and Portuguese.
+
 **Example interactions:**
 - *"How did the Search channel perform last month?"*
 - *"Which channel has the best conversion rate and why?"*
