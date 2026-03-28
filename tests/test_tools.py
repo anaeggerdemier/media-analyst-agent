@@ -1,8 +1,8 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import pytest
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def mock_bq_service():
     with patch("app.agent.tools.bq_service") as mock:
         yield mock
@@ -46,6 +46,16 @@ def test_get_traffic_volume_empty(mock_bq_service):
     assert "No traffic data found" in result
 
 
+def test_get_traffic_volume_bq_error(mock_bq_service):
+    mock_bq_service.get_traffic_volume.side_effect = Exception("BQ connection failed")
+
+    from app.agent.tools import get_traffic_volume
+
+    result = get_traffic_volume.invoke({"days": 30})
+
+    assert "Error fetching traffic volume" in result
+
+
 def test_get_revenue_by_channel_returns_formatted_string(mock_bq_service):
     mock_bq_service.get_revenue_by_channel.return_value = [
         {
@@ -63,6 +73,18 @@ def test_get_revenue_by_channel_returns_formatted_string(mock_bq_service):
     assert "Search" in result
     assert "200,767.50" in result
     assert "Revenue by channel" in result
+
+
+def test_get_revenue_by_channel_bq_error(mock_bq_service):
+    mock_bq_service.get_revenue_by_channel.side_effect = Exception(
+        "BQ connection failed"
+    )
+
+    from app.agent.tools import get_revenue_by_channel
+
+    result = get_revenue_by_channel.invoke({"days": 30})
+
+    assert "Error fetching revenue data" in result
 
 
 def test_get_channel_comparison_returns_formatted_string(mock_bq_service):
@@ -94,3 +116,15 @@ def test_get_channel_comparison_empty(mock_bq_service):
     result = get_channel_comparison.invoke({"days": 30})
 
     assert "No comparison data found" in result
+
+
+def test_get_channel_comparison_bq_error(mock_bq_service):
+    mock_bq_service.get_channel_comparison.side_effect = Exception(
+        "BQ connection failed"
+    )
+
+    from app.agent.tools import get_channel_comparison
+
+    result = get_channel_comparison.invoke({"days": 30})
+
+    assert "Error fetching channel comparison" in result

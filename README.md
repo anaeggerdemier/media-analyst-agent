@@ -15,7 +15,7 @@ Recommendation: increase budget allocation before peak season."
 
 ---
 
-## 📌 Overview
+## Overview
 
 Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real ROI of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
 
@@ -114,7 +114,7 @@ If the user asks something outside the media/revenue domain (e.g. *"What's the w
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 media-analyst-agent/
@@ -268,6 +268,24 @@ curl http://127.0.0.1:8000/health
 
 ---
 
+## Tests
+
+All tests use mocks — no real BigQuery or Anthropic API calls are made.
+```bash
+pytest tests/ -v
+```
+
+### What is covered
+
+| File | What it tests |
+|---|---|
+| `test_tools.py` | Output format of each tool, empty results, and BigQuery errors |
+| `test_bigquery_service.py` | SQL method behavior with mocked query results |
+| `test_routes.py` | API endpoints: happy path, validation (422), and error handling (500) |
+
+---
+
+
 ## Dataset
 
 This project uses the public BigQuery dataset [`bigquery-public-data.thelook_ecommerce`](https://console.cloud.google.com/marketplace/product/bigquery-public-data/thelook-ecommerce), which simulates a clothing e-commerce store.
@@ -326,6 +344,6 @@ The MVP keeps things simple with a synchronous response. Streaming can be added 
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 Ana Caroline Demier
