@@ -1,4 +1,5 @@
 import logging
+import warnings
 from langchain_anthropic import ChatAnthropic
 from langgraph.prebuilt import create_react_agent
 from app.prompts.system_prompt import SYSTEM_PROMPT
@@ -8,6 +9,8 @@ from app.agent.tools import (
     get_channel_comparison,
 )
 from app.core.config import settings
+
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="langgraph")
 
 logger = logging.getLogger(__name__)
 
