@@ -17,7 +17,7 @@ Recommendation: increase budget allocation before peak season."
 
 ## Overview
 
-Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real ROI of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
+Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real performance of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
 
 **Example interactions:**
 - *"How did the Search channel perform last month?"*
@@ -104,7 +104,9 @@ The agent has access to three tools. It picks the right one based on the user's 
 
 **Query:** A single LEFT JOIN across all three tables that returns `total_users`, `total_orders`, `total_revenue`, `conversion_rate_pct`, and `revenue_per_user` per channel — all in one shot.
 
-**Example trigger:** *"Which channel has the best ROI?"*
+**Example trigger:** *"Which channel has the best performance?"*
+
+**Ranking criteria:** Channels are ranked by `revenue_per_user` — the metric that best reflects commercial efficiency, combining both reach (total users) and monetization (revenue). Conversion rate and total revenue are also returned for full context.
 
 ---
 

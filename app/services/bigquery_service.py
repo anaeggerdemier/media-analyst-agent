@@ -80,7 +80,6 @@ class BigQueryService:
                 AND DATE(o.created_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
                 AND o.status NOT IN ('Cancelled', 'Returned')
             LEFT JOIN `{DATASET}.order_items` oi ON o.order_id = oi.order_id
-            WHERE DATE(u.created_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
             GROUP BY u.traffic_source
             ORDER BY revenue_per_user DESC
         """
