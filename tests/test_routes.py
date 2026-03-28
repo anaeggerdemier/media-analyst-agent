@@ -49,17 +49,12 @@ def test_chat_returns_tool_used(mock_run_agent):
     assert data["tool_used"] == "get_channel_comparison"
 
 
-def test_chat_empty_message(mock_run_agent):
-    mock_run_agent.return_value = {
-        "response": "Please ask a question about traffic or revenue.",
-        "tool_used": None,
-    }
+def test_chat_empty_message():
     response = client.post(
         "/api/v1/chat",
         json={"message": ""},
     )
-    assert response.status_code == 200
-    assert response.json()["tool_used"] is None
+    assert response.status_code == 422
 
 
 def test_chat_missing_message():

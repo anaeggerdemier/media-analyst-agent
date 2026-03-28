@@ -73,7 +73,7 @@ class BigQueryService:
                 COUNT(DISTINCT u.id) AS total_users,
                 COUNT(DISTINCT o.order_id) AS total_orders,
                 ROUND(SUM(oi.sale_price), 2) AS total_revenue,
-                ROUND(COUNT(DISTINCT o.order_id) / COUNT(DISTINCT u.id) * 100, 2) AS conversion_rate_pct,
+                ROUND(COUNT(DISTINCT CASE WHEN o.order_id IS NOT NULL THEN u.id END) / COUNT(DISTINCT u.id) * 100, 2) AS conversion_rate_pct,
                 ROUND(SUM(oi.sale_price) / COUNT(DISTINCT u.id), 2) AS revenue_per_user
             FROM `{DATASET}.users` u
             LEFT JOIN `{DATASET}.orders` o ON u.id = o.user_id

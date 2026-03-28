@@ -72,7 +72,7 @@ def test_get_channel_comparison(bq_service):
                 "total_users": 1000,
                 "total_orders": 1024,
                 "total_revenue": 97750.00,
-                "conversion_rate_pct": 102.44,
+                "conversion_rate_pct": 4.2,
                 "revenue_per_user": 97.75,
             },
         ]
@@ -82,7 +82,7 @@ def test_get_channel_comparison(bq_service):
 
     assert len(results) == 1
     assert results[0]["traffic_source"] == "Display"
-    assert results[0]["conversion_rate_pct"] == 102.44
+    assert results[0]["conversion_rate_pct"] == 4.2
 
 
 def test_get_traffic_volume_empty_result(bq_service):
