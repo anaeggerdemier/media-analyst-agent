@@ -9,7 +9,7 @@
 **Question:**
 "Which channel has the best performance?"
 
-**Answer:**
+**Example of a possible response:**
 "Search leads in revenue with $142k and a 4.2% conversion rate.
 Recommendation: increase budget allocation before peak season."
 
@@ -20,7 +20,7 @@ Recommendation: increase budget allocation before peak season."
 Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real performance of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
 
 **Language support:**
-The agent supports multilingual queries and responds in the same language as the user, enabling seamless interaction in both English and Portuguese.
+The agent is instructed to respond in the same language as the user, enabling English and Portuguese interactions.
 
 **Example interactions:**
 
@@ -344,7 +344,7 @@ Each tool has a focused purpose, which helps the model make better routing decis
 **Why not stream the response?**
 The MVP keeps things simple with a synchronous response. Streaming can be added via LangGraph's `astream_events` and FastAPI's `StreamingResponse` as a next step.
 
-**Observability:** All requests are logged with structured logging (timestamp, level, message). Tool usage is tracked per request via the `tool_used` field in the response.
+**Observability:** All requests are logged with timestamps, log levels, and error traces for easier debugging. Tool usage is also exposed via the `tool_used` field in the API response.
 
 ---
 
