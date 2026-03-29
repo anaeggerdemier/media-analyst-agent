@@ -113,7 +113,7 @@ The agent has access to three tools. It picks the right one based on the user's 
 
 **Example trigger:** *"Which channel has the best performance?"*
 
-**Ranking criteria:** Channels are ranked by `revenue_per_user` — the metric that best reflects commercial efficiency, combining both reach (total users) and monetization (revenue). Conversion rate and total revenue are also returned for full context.
+**Ranking criteria:** Channels are ranked by `revenue_per_user` because it balances acquisition scale and monetization efficiency. This makes it more actionable for media budget decisions than looking at total revenue alone. Conversion rate and total revenue are also included to provide additional context and avoid misleading interpretations.
 
 ---
 
