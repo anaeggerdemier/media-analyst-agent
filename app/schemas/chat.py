@@ -22,10 +22,11 @@ class ChatResponse(BaseModel):
     response: str = Field(
         ...,
         examples=[
-            "**Display had the best overall performance** in the last 30 days, despite bringing in the lowest volume of users.\n\n"
-            "- **Highest conversion rate**: 7.45% (vs. 6.68% average across channels)\n"
-            "- **Best revenue per user**: $8.09 (19% higher than the next best channel)\n\n"
-            "**Recommendation:** Increase Display budget allocation — it's your most efficient channel for converting visitors into customers."
+            "**Search was the best performing channel in the last 30 days.**\n\n"
+            "Search excelled because it combines high-intent traffic with significant volume: "
+            "6.74% conversion rate and $482K in total revenue (83% of all channels).\n\n"
+            "**Recommendation:** Double down on Search optimization and budget allocation — "
+            "it delivers both quality and quantity."
         ],
     )
     tool_used: str | None = Field(

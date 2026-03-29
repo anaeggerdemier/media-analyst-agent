@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI
-from app.api.routes import router
-from app.schemas.health import HealthResponse
+from app.api.routes import router, health_router
+from app.core.config import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -35,23 +35,9 @@ app = FastAPI(
         "- Declines out-of-scope requests without tool execution\n"
         "- Relies on tool calling instead of prompt-only reasoning"
     ),
-    version="0.1.0",
+    version=settings.APP_VERSION,
     openapi_tags=tags_metadata,
 )
 
+app.include_router(health_router)
 app.include_router(router, prefix="/api/v1")
-
-
-@app.get(
-    "/health",
-    tags=["Health"],
-    summary="Check service health",
-    description="Returns the current API status and service version.",
-    response_model=HealthResponse,
-)
-async def health() -> HealthResponse:
-    return HealthResponse(
-        status="ok",
-        service="media-analyst-agent",
-        version="0.1.0",
-    )

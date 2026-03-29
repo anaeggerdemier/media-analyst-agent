@@ -1,11 +1,28 @@
 import logging
 from fastapi import APIRouter, HTTPException
 from app.schemas.chat import ChatRequest, ChatResponse
+from app.schemas.health import HealthResponse
 from app.agent.agent import run_agent
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Agent"])
+health_router = APIRouter(tags=["Health"])
+
+
+@health_router.get(
+    "/health",
+    summary="Check service health",
+    description="Returns the current API status and service version.",
+    response_model=HealthResponse,
+)
+async def health() -> HealthResponse:
+    return HealthResponse(
+        status="ok",
+        service="media-analyst-agent",
+        version=settings.APP_VERSION,
+    )
 
 
 @router.post(

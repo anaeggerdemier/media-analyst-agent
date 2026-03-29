@@ -76,7 +76,7 @@ get_traffic  get_revenue  get_channel
 | **LangGraph ReAct** | Gives the agent a reasoning loop (think → act → observe) instead of a single prompt call. The agent chooses tools dynamically based on intent. |
 | **Tool Calling** | Each tool is a well-scoped Python function. The LLM never sees raw SQL — it only sees structured results. This separates concerns cleanly. |
 | **FastAPI** | Async-ready, automatic OpenAPI docs, and native Pydantic integration for request/response validation. |
-| **Pydantic schemas** | `ChatRequest`, `ChatResponse`, `TrafficVolumeParams`, etc. enforce types at every boundary. |
+| **Pydantic schemas** | `ChatRequest`, `ChatResponse`, and `HealthResponse` enforce types at every boundary. |
 | **Parameterized SQL** | All BigQuery queries use `ScalarQueryParameter` — no string interpolation, no SQL injection risk. |
 
 ---
@@ -132,14 +132,14 @@ media-analyst-agent/
 │   │   ├── agent.py             # LangGraph ReAct agent orchestration
 │   │   └── tools.py             # 3 BigQuery tools with @tool decorator
 │   ├── api/
-│   │   └── routes.py            # FastAPI POST /api/v1/chat endpoint
+│   │   └── routes.py            # FastAPI /health and /api/v1/chat endpoints
 │   ├── core/
 │   │   └── config.py            # Pydantic settings (reads from .env)
 │   ├── prompts/
-│   │   └── system_prompt.py     # System prompt (separated from logic)
+│   │   └── system_prompt.py     # System prompt
 │   ├── schemas/
 │   │   ├── chat.py              # ChatRequest, ChatResponse
-│   │   └── query.py             # Tool input params (Pydantic)
+│   │   └── health.py            # HealthResponse
 │   └── services/
 │       └── bigquery_service.py  # BigQuery client with parameterized queries
 ├── main.py                      # FastAPI entrypoint
