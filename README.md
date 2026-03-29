@@ -344,6 +344,9 @@ Each tool has a focused purpose, which helps the model make better routing decis
 **Why not stream the response?**
 The MVP keeps things simple with a synchronous response. Streaming can be added via LangGraph's `astream_events` and FastAPI's `StreamingResponse` as a next step.
 
+**Why not abstract the repeated try/except pattern across tools?**
+The three tools share the same try/except and formatting skeleton. A `_run_tool` helper was considered but deliberately skipped -- with only three tools and no immediate growth planned, the indirection adds reading cost with no real maintainability gain. If a fourth tool is added, this abstraction becomes the right call.
+
 **Observability:** All requests are logged with timestamps, log levels, and error traces for easier debugging. Tool usage is also exposed via the `tool_used` field in the API response.
 
 ---
