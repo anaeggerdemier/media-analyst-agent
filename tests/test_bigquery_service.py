@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 import pytest
 from app.services.bigquery_service import BigQueryService
+from google.api_core.exceptions import GoogleAPIError
 
 
 @pytest.fixture
@@ -91,3 +92,10 @@ def test_get_traffic_volume_empty_result(bq_service):
     results = bq_service.get_traffic_volume(traffic_source="TikTok", days=30)
 
     assert results == []
+
+
+def test_run_query_raises_on_bigquery_error(bq_service):
+    bq_service.client.query.side_effect = GoogleAPIError("quota exceeded")
+
+    with pytest.raises(GoogleAPIError):
+        bq_service.run_query("SELECT 1")
