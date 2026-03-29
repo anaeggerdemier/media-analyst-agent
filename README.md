@@ -357,6 +357,8 @@ The three tools share the same try/except and formatting skeleton. A `_run_tool`
 - [ ] Streaming responses via Server-Sent Events
 - [ ] Natural date range parsing ("last week", "Q1", etc.)
 - [ ] Add a `get_top_products_by_channel` tool for deeper SKU-level insights
+- [ ] Add media spend data source to enable true ROI calculation per channel
+      (current metrics use revenue_per_user and conversion_rate as efficiency proxies)
 - [ ] Dockerize for easy deployment
 - [ ] Add evaluation tests with LangSmith
 - [ ] Deploy to Cloud Run (container-ready architecture)
