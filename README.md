@@ -344,6 +344,8 @@ Each tool has a focused purpose, which helps the model make better routing decis
 **Why not stream the response?**
 The MVP keeps things simple with a synchronous response. Streaming can be added via LangGraph's `astream_events` and FastAPI's `StreamingResponse` as a next step.
 
+**Observability:** All requests are logged with structured logging (timestamp, level, message). Tool usage is tracked per request via the `tool_used` field in the response.
+
 ---
 
 ## Possible Next Steps
@@ -354,6 +356,7 @@ The MVP keeps things simple with a synchronous response. Streaming can be added 
 - [ ] Add a `get_top_products_by_channel` tool for deeper SKU-level insights
 - [ ] Dockerize for easy deployment
 - [ ] Add evaluation tests with LangSmith
+- [ ] Deploy to Cloud Run (container-ready architecture)
 
 ---
 
