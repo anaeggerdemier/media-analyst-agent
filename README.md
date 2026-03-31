@@ -347,6 +347,9 @@ The MVP keeps things simple with a synchronous response. Streaming can be added 
 **Why not abstract the repeated try/except pattern across tools?**
 The three tools share the same try/except and formatting skeleton. A `_run_tool` helper was considered but deliberately skipped -- with only three tools and no immediate growth planned, the indirection adds reading cost with no real maintainability gain. If a fourth tool is added, this abstraction becomes the right call.
 
+**Why does `get_channel_comparison` use all historical users as the denominator?**
+The `thelook_ecommerce.users` table has no session or visit date column — only `created_at` (signup date). This means `total_users` per channel reflects the full historical base, not users acquired in the filtered period. As a result, `conversion_rate_pct` and `revenue_per_user` are best read as **lifetime efficiency proxies** rather than period-specific conversion rates. A production implementation would require a sessions table with visit timestamps to compute true period-over-period conversion.
+
 **Observability:** All requests are logged with timestamps, log levels, and error traces for easier debugging. Tool usage is also exposed via the `tool_used` field in the API response.
 
 ---
