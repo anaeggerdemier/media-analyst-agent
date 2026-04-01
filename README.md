@@ -1,6 +1,6 @@
 # Media Analyst Agent
 
-> An autonomous AI agent that acts as a Junior Media Analyst for e-commerce teams — understanding natural language questions, querying BigQuery in real time, and delivering actionable insights.
+> An autonomous AI agent that acts as a Junior Media Analyst for e-commerce teams — understanding natural language questions, querying BigQuery on demand, and delivering actionable insights.
 
 ---
 
@@ -17,7 +17,7 @@ Recommendation: increase budget allocation before peak season."
 
 ## Overview
 
-Media and growth teams spend too much time manually crossing traffic data with sales data to understand the real performance of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
+Media and growth teams spend too much time manually crossing traffic data with sales data to understand the business impact and relative efficiency of each channel. This MVP solves that by exposing a conversational API backed by a ReAct agent that decides autonomously which data to fetch and how to interpret it.
 
 **Language support:**
 The agent is instructed to respond in the same language as the user, enabling English and Portuguese interactions.
@@ -144,7 +144,6 @@ media-analyst-agent/
 │       └── bigquery_service.py  # BigQuery client with parameterized queries
 ├── main.py                      # FastAPI entrypoint
 ├── pyproject.toml
-├── requirements.txt
 └── .env.example
 ```
 
@@ -181,7 +180,7 @@ source .venv/bin/activate
 ### 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install .
 ```
 
 ### 4. Set up Google Cloud credentials
