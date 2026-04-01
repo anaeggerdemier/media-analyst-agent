@@ -371,3 +371,7 @@ The `thelook_ecommerce.users` table has no session or visit date column — only
 ## Author
 
 Ana Caroline Demier
+
+Copyright © 2026 Ana Caroline Demier. All rights reserved.
+
+This source code and all related files are proprietary and confidential. They were developed exclusively as a technical case study. Unauthorized copying, modification, distribution, or commercial use of this software, via any medium, is strictly prohibited without the express written permission of the author.
